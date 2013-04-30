@@ -3,16 +3,16 @@ using ValueDispatch
 
 @facts "Value dispatch fns" begin
 
-    @fact "using `=`" begin
+    @fact "@on with `=`" begin
 
         @dispatch fizzbuzz(n::Int) = (n % 3 == 0, n % 5 == 0)
 
         fizzbuzz(15) => :throws
 
-        @value fizzbuzz(n)::(true,  true ) = "fizzbuzz"
-        @value fizzbuzz(n)::(true,  false) = "fizz"
-        @value fizzbuzz(n)::(false, true ) = "buzz"
-        @value fizzbuzz(n)::(:default)     = n
+        @on (true,true)  fizzbuzz(n) = "fizzbuzz"
+        @on (true,false) fizzbuzz(n) = "fizz"
+        @on (false,true) fizzbuzz(n) = "buzz"
+        @on :default     fizzbuzz(n) = n
 
         fizzbuzz(15) => "fizzbuzz"
         fizzbuzz(3)  => "fizz"
@@ -21,7 +21,7 @@ using ValueDispatch
 
     end
 
-    @fact "using `function`" begin
+    @fact "@on with `function`" begin
 
         @dispatch function bangclang(n::Int)
             (n % 3 == 0, n % 5 == 0)
@@ -29,16 +29,16 @@ using ValueDispatch
 
         bangclang(15) => :throws
 
-        @value function bangclang(n)::(true,  true )
+        @on (true,true) function bangclang(n)
             "bangclang"
         end
-        @value function bangclang(n)::(true,  false)
+        @on (true,false) function bangclang(n)
             "bang"
         end
-        @value function bangclang(n)::(false,  true)
+        @on (false,true) function bangclang(n)
             "clang"
         end
-        @value function bangclang(n)::(:default)
+        @on :default function bangclang(n)
             n
         end
 
@@ -46,6 +46,26 @@ using ValueDispatch
         bangclang(3)  => "bang"
         bangclang(5)  => "clang"
         bangclang(4)  => 4
+
+    end
+
+    @fact "using `register`" begin
+
+        @dispatch bizzbazz(n::Int) = (n % 3 == 0, n % 5 == 0)
+
+        register(bizzbazz, (true,true)) do n
+            "bizzbazz"
+        end
+        register(bizzbazz, (true,false)) do n
+            "bizz"
+        end
+        register(n -> "bazz", bizzbazz, (false,true))
+        register(n -> n, bizzbazz, :default)
+
+        bizzbazz(15) => "bizzbazz"
+        bizzbazz(3)  => "bizz"
+        bizzbazz(5)  => "bazz"
+        bizzbazz(4)  => 4
 
     end
 

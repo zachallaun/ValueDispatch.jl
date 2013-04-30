@@ -2,7 +2,7 @@ module ValueDispatch
 
 using ExpressionUtils
 
-export @dispatch, @value
+export @dispatch, @on, register
 
 const dispatchtable = Dict{Function, Dict}()
 
@@ -41,7 +41,7 @@ macro dispatch(ex)
     expr_replace(ex, template, out)
 end
 
-function addmethod!(dispatchfn::Function, val, method::Function)
+function register(method::Function, dispatchfn::Function, val)
     methodtable = get(dispatchtable, dispatchfn, false)
     if methodtable != false
         methodtable[val] = method
@@ -51,12 +51,12 @@ function addmethod!(dispatchfn::Function, val, method::Function)
     dispatchfn
 end
 
-macro value(ex)
+macro on(val, ex)
     if ex.head == :(=)
-        template = :(_ESC_name_(_SPLAT_params_)::_dispatchval_ = _SPLAT_body_)
+        template = :(_ESC_name_(_SPLAT_params_) = _SPLAT_body_)
     elseif ex.head == :function
         template = quote
-            function _ESC_name_(_SPLAT_params_)::_dispatchval_
+            function _ESC_name_(_SPLAT_params_)
                 _SPLAT_body_
             end
         end
@@ -65,9 +65,9 @@ macro value(ex)
     end
 
     out = quote
-        addmethod!(_name_, _dispatchval_, function (_UNSPLAT_params_)
+        register(function (_UNSPLAT_params_)
             _UNSPLAT_body_
-        end)
+        end, _name_, $(esc(val)))
     end
 
     expr_replace(ex, template, out)
