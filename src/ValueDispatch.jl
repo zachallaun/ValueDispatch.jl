@@ -24,7 +24,8 @@ macro dispatch(ex)
     @gensym method
 
     out = quote
-        local methodtable = {:default => false}
+        local methodtable = Dict{Any, Any}(:default => false)
+
         function _name_(_UNSPLAT_params_)
             val = begin _UNSPLAT_body_ end
             method = get(methodtable, val, methodtable[:default])
