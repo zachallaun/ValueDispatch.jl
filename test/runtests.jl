@@ -1,33 +1,33 @@
 using FactCheck
 using ValueDispatch
 
-@facts "Value dispatch fns" begin
+facts("Value dispatch fns") do
 
-    @fact "@on with `=`" begin
+    context("@on with `=`") do
 
         @dispatch fizzbuzz(n::Int) = (n % 3 == 0, n % 5 == 0)
 
-        fizzbuzz(15) => :throws
+        @fact_throws fizzbuzz(15)
 
         @on (true,true)  fizzbuzz(n) = "fizzbuzz"
         @on (true,false) fizzbuzz(n) = "fizz"
         @on (false,true) fizzbuzz(n) = "buzz"
         @on :default     fizzbuzz(n) = n
 
-        fizzbuzz(15) => "fizzbuzz"
-        fizzbuzz(3)  => "fizz"
-        fizzbuzz(5)  => "buzz"
-        fizzbuzz(4)  => 4
+        @fact fizzbuzz(15) --> "fizzbuzz"
+        @fact fizzbuzz(3)  --> "fizz"
+        @fact fizzbuzz(5)  --> "buzz"
+        @fact fizzbuzz(4)  --> 4
 
     end
 
-    @fact "@on with `function`" begin
+    context("@on with `function`") do
 
         @dispatch function bangclang(n::Int)
             (n % 3 == 0, n % 5 == 0)
         end
 
-        bangclang(15) => :throws
+        @fact_throws bangclang(15)
 
         @on (true,true) function bangclang(n)
             "bangclang"
@@ -42,14 +42,14 @@ using ValueDispatch
             n
         end
 
-        bangclang(15) => "bangclang"
-        bangclang(3)  => "bang"
-        bangclang(5)  => "clang"
-        bangclang(4)  => 4
+        @fact bangclang(15) --> "bangclang"
+        @fact bangclang(3)  --> "bang"
+        @fact bangclang(5)  --> "clang"
+        @fact bangclang(4)  --> 4
 
     end
 
-    @fact "using `register`" begin
+    context("using `register`") do
 
         @dispatch bizzbazz(n::Int) = (n % 3 == 0, n % 5 == 0)
 
@@ -62,10 +62,10 @@ using ValueDispatch
         register(n -> "bazz", bizzbazz, (false,true))
         register(n -> n, bizzbazz, :default)
 
-        bizzbazz(15) => "bizzbazz"
-        bizzbazz(3)  => "bizz"
-        bizzbazz(5)  => "bazz"
-        bizzbazz(4)  => 4
+        @fact bizzbazz(15) --> "bizzbazz"
+        @fact bizzbazz(3)  --> "bizz"
+        @fact bizzbazz(5)  --> "bazz"
+        @fact bizzbazz(4)  --> 4
 
     end
 
