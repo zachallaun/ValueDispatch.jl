@@ -1,4 +1,8 @@
 ## Value Dispatch
+Windows: [![Build status](https://ci.appveyor.com/api/projects/status/2dr7o7hjyq9g4mpn?svg=true)](https://ci.appveyor.com/project/gdziadkiewicz/valuedispatch-jl)
+
+
+Linux, IOS: [![Build Status](https://travis-ci.org/gdziadkiewicz/ValueDispatch.jl.svg?branch=master)](https://travis-ci.org/gdziadkiewicz/ValueDispatch.jl)
 
 Function dispatch on value instead of type. Quite similar to Clojure's
 [multimethods](http://clojure.org/multimethods).
